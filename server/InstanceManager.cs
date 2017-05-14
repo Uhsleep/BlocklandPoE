@@ -87,13 +87,14 @@ function InstanceManager::newInstance(%this, %mapName, %difficulty)
 		availability = %mapData.availability;
 		canAttack = %mapData.canAttack; 
 	};
-    %instance.clients = new SimSet("InstanceClients_" @ %this.brickGroupId);
-    %instance.brickGroup = new SimGroup("BrickGroup_" @ %this.brickGroupId);
-    %instance.brickGroup.bl_id = %this.brickGroupId;
-    %instance.brickGroup.ispublicdomain = false;
-    %instance.brickGroup.name = %mapData.mapName;
-    %instance.brickGroup.instance = %instance;
-    mainBrickGroup.add(%instance.brickGroup);
+
+	%instance.clients = new SimSet("InstanceClients_" @ %this.brickGroupId);
+	%instance.brickGroup = new SimGroup("BrickGroup_" @ %this.brickGroupId);
+	%instance.brickGroup.bl_id = %this.brickGroupId;
+	%instance.brickGroup.ispublicdomain = false;
+	%instance.brickGroup.name = %mapData.mapName;
+	%instance.brickGroup.instance = %instance;
+	mainBrickGroup.add(%instance.brickGroup);
 
 	// if the queue is currently empty, begin the loading process directly, otherwise add to queue
 	if (%this.queue.getCount() == 0 && !%this.loading)
