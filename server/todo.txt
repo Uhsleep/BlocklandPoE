@@ -1,0 +1,7 @@
+1.) when player leaves party, remove mutual instances between him and remaining party members
+2.) figure out instance and npc system
+3.) treat clickable objects as npcs??
+4.) figure out an item drop system
+5.) set up combat system
+6.) increase distance between instances: 1000 + max instance size + marginal size
+7.) work on quest stuff
