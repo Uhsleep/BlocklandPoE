@@ -1,26 +1,25 @@
-function NPC::onSpawn(%this)
+function NPC::onSpawn(%this, %aiplayer)
 {
 	
 }
 
-function NPC::onLeftClick(%this, %client, %mod)
+function NPC::onLeftClick(%this, %aiplayer, %client, %mod)
 {
 	
 }
 
-function NPC::onRightClick(%this, %client, %mod)
+function NPC::onRightClick(%this, %aiplayer, %client, %mod)
 {
 	
 }
 
-function NPC::onDeath(%this, %killer)
+function NPC::onDeath(%this, %aiplayer, %killer)
 {
 	
 }
-
 
 // for mobs
-function NPC::onTick(%this)
+function NPC::onTick(%this, %aiplayer)
 {
 	
 }

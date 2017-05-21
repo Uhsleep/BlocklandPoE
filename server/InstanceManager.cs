@@ -198,6 +198,44 @@ package POE_InstanceLoader
 			%job.delete();
 		}
 	}
+
+	function SimObject::setNTObjectName(%this, %name)
+	{
+		%p = parent::setNTObjectName(%this, %name);
+
+		%i = getSubStr(%name, 0, 1) $= "_" ? 1 : 0;
+		%nameWords = strReplace(getSubStr(%name, %i, strLen(%name)), "_", " ");
+
+		if(getWord(%nameWords, 0) $= "npcspawn")
+		{
+			%npcName = getWord(%nameWords, 1);
+			//talk("npc name: " @ %npcName);
+			%aiPlayer = new AIPlayer("NPC_" @ %npcName)
+			{
+				position = vectorAdd(%this.position, "0 0 0.5");
+				dataBlock = playerStandardArmor;
+				npcName = %npcName;
+			};
+
+			%aiPlayer.instance = %this.instance;
+			%this.npc = %aiPlayer;
+
+			if(isFunction(%aiPlayer.npcName, "onSpawn"))
+				%aiPlayer.npcName.onSpawn(%aiPlayer);
+		}
+
+		return %p;
+	}
+
+	function fxDTSBrick::onDeath(%this)
+	{
+		%p = parent::onDeath(%this);
+		
+		if(isObject(%this.npc))
+			%this.npc.delete();
+
+		return %p;
+	}
 };
 activatePackage(POE_InstanceLoader);
 
