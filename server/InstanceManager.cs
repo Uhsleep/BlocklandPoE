@@ -206,7 +206,7 @@ package POE_InstanceLoader
 		%i = getSubStr(%name, 0, 1) $= "_" ? 1 : 0;
 		%nameWords = strReplace(getSubStr(%name, %i, strLen(%name)), "_", " ");
 
-		if(getWord(%nameWords, 0) $= "npcspawn")
+		if(getWord(%nameWords, 0) $= "npcspawn" && !isObject(%this.npc))
 		{
 			%npcName = getWord(%nameWords, 1);
 			//talk("npc name: " @ %npcName);
@@ -216,6 +216,30 @@ package POE_InstanceLoader
 				dataBlock = playerStandardArmor;
 				npcName = %npcName;
 			};
+
+			%aiPlayer.setHatType(%npcName.hatType);
+			%aiPlayer.setHatAccentType(%npcName.accentType);
+			%aiPlayer.setHeadSmiley(%npcName.smiley);
+			%aiPlayer.setBodyType(%npcName.bodyType);
+			%aiPlayer.setBodyDecal(%npcName.decal);
+			%aiPlayer.setPackType(%npcName.packType);
+			%aiPlayer.setLeftHandType(%npcName.lHandtype);
+			%aiPlayer.setRightHandtype(%npcName.rHandType);
+			%aiPlayer.setPantsType(%npcName.pantsType);
+			%aiPlayer.setLeftShoeType(%npcName.lShoeType);
+			%aiPlayer.setRightShoetype(%npcName.rShoeType);
+
+			%aiPlayer.setHatColor(%npcName.hatColor);
+			%aiPlayer.setHatAccentColor(%npcName.accentType, %npcName.accentColor);
+			%aiPlayer.setHeadColor(%npcName.headColor);
+			%aiPlayer.setBodyColor(%npcName.bodyColor);
+			%aiPlayer.setRightArmColor(%npcName.rArmColor);
+			%aiPlayer.setLeftArmColor(%npcName.lArmColor);
+			%aiPlayer.setRightHandColor(%npcName.rHandColor);
+			%aiPlayer.setLeftHandColor(%npcName.lHandColor);
+			%aiPlayer.setPantsColor(%npcName.pantsColor);
+			%aiPlayer.setRightShoeColor(%npcName.rShoeColor);
+			%aiPlayer.setLeftShoeColor(%npcName.lShoeColor);
 
 			%aiPlayer.instance = %this.instance;
 			%this.npc = %aiPlayer;
