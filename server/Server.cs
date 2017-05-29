@@ -7,3 +7,5 @@ exec("./Avatar.cs");
 exec("./InstanceManager.cs");
 exec("./maps/TwilightStrand.cs");
 exec("./npcs/Bestel.cs");
+exec("./GameConnection.cs");
+exec("./datablocks/Player_PathOfExile.cs");

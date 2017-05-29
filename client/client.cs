@@ -10,7 +10,16 @@ package POE_Connect
         else
             %modules = %modules TAB ("POE" SPC $POE::ClientVersion);
 
+        activatePackage(PlayGuiOverlayPackage);
+
         parent::setConnectArgs(%this, %lanName, %netName, %prefix, %suffix, %nonce, %rtb, %modules, %a, %b, %c, %d, %e, %f, %g, %h);
+	}
+
+	function disconnect()
+	{
+		deactivatePackage(PlayGuiOverlayPackage);
+
+		return parent::disconnect();
 	}
 };
 activatePackage(POE_Connect);

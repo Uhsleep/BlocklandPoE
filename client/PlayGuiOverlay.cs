@@ -5,6 +5,8 @@ $mod_rctrl  = 1 << 3;
 $mod_lalt   = 1 << 4;
 $mod_ralt   = 1 << 5;
 
+if (!isFunction("GuiMouseEventCtrl", "onMouseMove"))
+	eval("function GuiMouseEventCtrl::onMouseMove(){}");
 if (!isFunction("GuiMouseEventCtrl", "onMouseEnter"))
 	eval("function GuiMouseEventCtrl::onMouseEnter(){}");
 if (!isFunction("GuiMouseEventCtrl", "onMouseLeave"))
@@ -20,39 +22,38 @@ if (!isFunction("GuiMouseEventCtrl", "onRightMouseDown"))
 if (!isFunction("GuiMouseEventCtrl", "onRightMouseUp"))
 	eval("function GuiMouseEventCtrl::onRightMouseUp(){}");	
 
-if(isObject(PlayGuiOverlay))
-	PlayGuiOverlay.delete();
-
-
-new GuiMouseEventCtrl(PlayGuiOverlay) {
-	  profile = "GuiDefaultProfile";
-	  horizSizing = "right";
-	  vertSizing = "bottom";
-	  position = "0 0";
-	  extent = getWords(getRes(), 0, 1);
-	  minExtent = "8 2";
-	  enabled = "1";
-	  visible = "1";
-	  clipToParent = "1";
-	  lockMouse = "0";
-};
-
-function clientCmdOpenOverlay()
+if(!isObject(PlayGuiOverlay))
 {
-	canvas.pushdialog(playguioverlay);
+	new GuiMouseEventCtrl(PlayGuiOverlay) {
+		  profile = "GuiDefaultProfile";
+		  horizSizing = "right";
+		  vertSizing = "bottom";
+		  position = "0 0";
+		  extent = getWords(getRes(), 0, 1);
+		  minExtent = "8 2";
+		  enabled = "1";
+		  visible = "1";
+		  clipToParent = "1";
+		  lockMouse = "0";
+	};
 }
 
-function clientCmdCloseOverlay()
+function clientCmdPoE_OpenOverlay()
+{
+	canvas.pushdialog(PlayGuiOverlay);
+}
+
+function clientCmdPoE_CloseOverlay()
 {
 	canvas.popDialog(PlayGuiOverlay);
 }
 
-function clientCmdGetRes()
+function clientCmdPoE_GetRes()
 {
 	commandToServer('setRes', getWord(getRes(), 0), getWord(getRes(), 1));
 }
 
-function clientCmdGetFov()
+function clientCmdPoE_GetFov()
 {
 	commandToServer('setFov', serverConnection.getControlCameraFov());
 }
@@ -77,7 +78,7 @@ function getScreenAngle(%vec)
 	%ndcY = %vY / mTan(mDegToRad(%verticalFov / 2));
 
 	%north = vectorNormalize(%vX SPC %vY);
-	echo("north is (" @ %north @ ")");
+	//echo("north is (" @ %north @ ")");
 
 	return getAngle(%north, %vec);
 }
@@ -118,10 +119,12 @@ function turnToScreenPosition(%mouseX, %mouseY)
 	$mvYaw = %rad;
 }
 
-package PlayGuiOverlay
+package PlayGuiOverlayPackage
 {
 	function GuiMouseEventCtrl::onMouseMove(%this, %a, %b, %c)
 	{	
+		parent::onMouseMove(%this, %a, %b, %c);
+
 		%mouseX = getWord(%b, 0);
 		%mouseY = getWord(%b, 1);
 	}
@@ -166,29 +169,34 @@ package PlayGuiOverlay
 	{
 		parent::onMouseUp(%this, %mod, %pos, %click);
 		moveForward(0);
-	}
-	
-	function respawnCountDownTick(%seconds)
-	{
-		parent::respawnCountDownTick(%seconds);
-
-		if(canvas.isMember(PlayGuiOverlay))
-			canvas.popDialog(PlayGuiOverlay);
-	}
+	} 	
 	
 	function toggleCursor(%val)
 	{
-		%p = parent::toggleCursor(%val);
-		
+		if(!canvas.isMember(PlayGuiOverlay))
+			return parent::toggleCursor(%val);
+
+
+		if(!canvas.isCursorOn())
+			canvas.cursorOn();
+
 		if(%val)
 		{
-			if(canvas.isMember(PlayGuiOverlay))
-				canvas.popDialog(PlayGuiOverlay);
+			if(canvas.getObject(canvas.getCount() - 1).getName() $= "NewChatHud")
+			{
+				%msg = "Normal mode";
+				canvas.pushToBack(PlayGuiOverlay);
+			}
 			else
-				canvas.pushDialog(PlayGuiOverlay);
+			{
+				%msg = "Link mode";
+				canvas.pushToBack(NewChatHud);
+			}
+
+			clientCmdCenterPrint(%msg, 3);
 		}
 		
-		return %p;
+		return %val;
 	}
 	
 	function Canvas::pushDialog(%this, %dialog)
@@ -199,5 +207,16 @@ package PlayGuiOverlay
 		
 		return %p;
 	}
+
+	function Canvas::setContent(%this, %gui)
+	{
+		%g = %this.isMember(PlayGuiOverlay);
+		%p = parent::setContent(%this, %gui);
+
+		if(%g)
+			%this.pushDialog(PlayGuiOverlay);
+
+		return %p;
+	}
 };
-activatepackage(PlayGuiOverlay);
+activatePackage(PlayGuiOverlayPackage);
